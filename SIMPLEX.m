@@ -1,58 +1,39 @@
 clc
 clear
+c=[4 3];
+st=[1 1;2 1];
+b=[8;10];
+s=eye(size(st,1));
+c=[c zeros(1,size(st,1)+1)];
+a=[st s b];
+bv=3:4;
+zjcj=c(bv)*a-c;
+table1=[zjcj;a]
 
-%declare
-c=[4 3 6];
-a=[2 3 2;4 0 3;2 5 0];
-b=[440;470;430];
-
-%formation of table
-[m,n]=size(a);
-s=eye(m);
-A=[a s b];
-cost=zeros(1,size(A,2));
-cost(1:n)=c;
-bv=n+1:size(A,2)-1;
-zjcj=cost(bv)*A-cost;
-table1=[zjcj;A];
-table1=array2table(table1);
-fprintf('Initial Tablet\n');
-table1
-
-%iteration
 zc=zjcj(1:end-1);
 while any(zc<0)
     disp("Above table is not optimal");
     [mv,pvtc]=min(zc);
-    cl=A(:,end);
-    sol=A(:,pvtc);
-    for i=1:m
-        if(sol(i)>0)
-            r(i)=cl(i)./sol(i);
+    fprintf("Entering column=%d/n",pvtc);
+    sol=a(:,end);
+    col=a(:,pvtc);
+    for i=1:size(a,1)
+        if col(i)>0
+            r(i)=sol(i)/col(i);
         else
             r(i)=inf;
         end
     end
-    [rv,pvtr]=min(r);
-    k=A(pvtr,pvtc);
-    A(pvtr,:)=A(pvtr,:)./k;
-    for i=1:m
+    [mv,pvtr]=min(r);
+    fprintf("Leaving row=%d/n",pvtr);
+    a(pvtr,:)=a(pvtr,:)/a(pvtr,:);
+    for i=1:2
         if i~=pvtr
-            A(i,:)=A(i,:)-A(i,pvtc).*A(pvtr,:);
+            a(i,:)=a(i,:)-a(i,pvtc).*a(pvtr,:);
         end
     end
-    zjcj=zjcj-zjcj(pvtc).*A(pvtr,:);
+    zjcj(1,:)=zjcj(1,:)-zjcj(1,pvtc)*a(pvtr,:);
     zc=zjcj(1:end-1);
-    tablei=[zjcj;A];
-    tablei=array2table(tablei);
-    fprintf("After enter %d col and exiting %d row",pvtc,pvtr);
-    tablei
-    bv(pvtr)=pvtc;
+    tablei=[zjcj;a]
 end
-
-disp("Opimality reached");
-fprintf("Value of Z=%d\n",zjcj(1,end));
-fprintf("Basic variables:-\n");
-bv
-disp("Values of BV:");
-A(:,end)
+disp("Above table is optimal");

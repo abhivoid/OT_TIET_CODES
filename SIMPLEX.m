@@ -27,7 +27,7 @@ while any(zc<0)
     [mv,pvtr]=min(r);
     fprintf("Leaving row=%d\n",pvtr);
     a(pvtr,:)=a(pvtr,:)/a(pvtr,pvtc);
-    for i=1:2
+    for i=1:size(a,1)
         if i~=pvtr
             a(i,:)=a(i,:)-a(i,pvtc).*a(pvtr,:);
         end
@@ -39,3 +39,7 @@ while any(zc<0)
     tablei=[zjcj;a]
 end
 disp("Above table is optimal");
+fprintf("Optimal Value=%d\n",zjcj(end));
+x=zeros(1,size(a,2)-1);
+x(1,bv)=a(:,end);
+array2table(x)
